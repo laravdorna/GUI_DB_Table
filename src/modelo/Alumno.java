@@ -20,8 +20,9 @@ public class Alumno {
     private int nAlumno;
     private String nombre;
     private String direccion;
-    private String curso;
+    private String telefono;
     private String dni;
+    private int idCurso;
 
     //CONSTRUCTORES
     public Alumno(String nombre, String telefono) throws NombreFormatException, TlfFormatException {
@@ -34,7 +35,7 @@ public class Alumno {
         String mensajeTlf = comprobarTlf(telefono);
 
         if (mensajeTlf == null) {
-            this.curso = telefono.trim();
+            this.telefono = telefono.trim();
         } else {
             throw new TlfFormatException(mensajeTlf);
         }
@@ -55,7 +56,7 @@ public class Alumno {
 
         String mensajeTlf = comprobarTlf(telefono);
         if (mensajeTlf == null) {
-            this.curso = telefono.trim();
+            this.telefono = telefono.trim();
         } else {
             throw new TlfFormatException(mensajeTlf);
         }
@@ -71,12 +72,12 @@ public class Alumno {
     }
 
     //GET Y SET
-    public int getnSocio() {
+    public int getnAlumno() {
         return nAlumno;
     }
 
-    public void setnSocio(int nSocio) {
-        this.nAlumno = nSocio;
+    public void setnAlumno(int nAlumno) {
+        this.nAlumno = nAlumno;
     }
 
     public String getNombre() {
@@ -102,14 +103,14 @@ public class Alumno {
     }
 
     public String getTelefono() {
-        return curso;
+        return telefono;
     }
 
     public void setTelefono(String telefono) throws TlfFormatException {
         String mensajeTlf = comprobarTlf(telefono);
 
         if (mensajeTlf == null) {
-            this.curso = telefono.trim();
+            this.telefono = telefono.trim();
         } else {
             throw new TlfFormatException(mensajeTlf);
         }
@@ -126,14 +127,23 @@ public class Alumno {
         }
     }
 
+    public int getIdCurso() {
+        return idCurso;
+    }
+
+    public void setIdCurso(int idCurso) {
+        this.idCurso = idCurso;
+    }
+    
+
     //DATOS
     @Override
     public String toString() {
-        return "Socio{" + "nSocio=" + nAlumno + ", nombre=" + nombre + ", telefono=" + curso + '}';
+        return "Socio{" + "nSocio=" + nAlumno + ", nombre=" + nombre + ", telefono=" + telefono + "curso="+ idCurso+ '}';
     }
 
     public String datosSocio() {
-        return "Socio{" + "nSocio=" + nAlumno + ", nombre=" + nombre + ", direccion=" + direccion + ", telefono=" + curso + ", dni=" + dni + '}';
+        return "Socio{" + "nSocio=" + nAlumno + ", nombre=" + nombre + ", direccion=" + direccion + ", telefono=" + telefono + ", dni=" + dni  + "curso="+ idCurso+ '}';
     }
 
     //METODOS DE CONTROL DE LOS ATRIBUTOS
