@@ -5,12 +5,7 @@
  */
 package gui;
 
-import DAO.CasasDAO;
-import DAO.ClientesDAO;
-import DAO.PisosDAO;
-import inmobiliaria_gui.ModeloComponentes.Clientes_TableModel;
-
-import inmobiliaria_gui.ModeloComponentes.Viviendas_TableModel;
+import dao.CursoDAO;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +14,8 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import modelo.Casa;
-import modelo.Cliente;
-import modelo.Piso;
-import modelo.Vivienda;
+import modelo.Curso;
+import modelo_Componentes.TM_Cursos;
 
 /**
  *
@@ -39,10 +32,10 @@ public class Dlg_MostrarCursos extends javax.swing.JDialog {
         this.setLocationRelativeTo(null);//para poner la pantalla centrada
         cargarTabla();
         //deja eliminar si tienes seleccionada una fila de la tabla
-        tbl_viviendas.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        tbl_cursos.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if (tbl_viviendas.getSelectedRow() != -1) {
+                if (tbl_cursos.getSelectedRow() != -1) {
                     btn_eliminar.setEnabled(true);
                 }
 
@@ -67,10 +60,10 @@ public class Dlg_MostrarCursos extends javax.swing.JDialog {
         btn_eliminar = new javax.swing.JButton();
         btn_nuevo = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tbl_viviendas = new javax.swing.JTable();
+        tbl_cursos = new javax.swing.JTable();
         btn_Aceptar = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
-        lbl_viviendas = new javax.swing.JLabel();
+        lbl_Cursos = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Clientes");
@@ -90,14 +83,9 @@ public class Dlg_MostrarCursos extends javax.swing.JDialog {
                 txt_buscarActionPerformed(evt);
             }
         });
-        txt_buscar.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txt_buscarKeyTyped(evt);
-            }
-        });
 
         cmb_Eleccion.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
-        cmb_Eleccion.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Cod.Casa", "Cod.Piso" }));
+        cmb_Eleccion.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "IdCurso", "Nombre" }));
         cmb_Eleccion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmb_EleccionActionPerformed(evt);
@@ -122,7 +110,7 @@ public class Dlg_MostrarCursos extends javax.swing.JDialog {
             }
         });
 
-        tbl_viviendas.setModel(new javax.swing.table.DefaultTableModel(
+        tbl_cursos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -133,7 +121,7 @@ public class Dlg_MostrarCursos extends javax.swing.JDialog {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(tbl_viviendas);
+        jScrollPane1.setViewportView(tbl_cursos);
 
         btn_Aceptar.setFont(new java.awt.Font("Georgia", 0, 14)); // NOI18N
         btn_Aceptar.setText("Aceptar");
@@ -145,8 +133,8 @@ public class Dlg_MostrarCursos extends javax.swing.JDialog {
 
         jSeparator1.setForeground(new java.awt.Color(0, 153, 153));
 
-        lbl_viviendas.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        lbl_viviendas.setText("VIVIENDAS");
+        lbl_Cursos.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        lbl_Cursos.setText("Cursos");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -178,14 +166,14 @@ public class Dlg_MostrarCursos extends javax.swing.JDialog {
                         .addComponent(btn_nuevo)
                         .addGap(57, 57, 57))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lbl_viviendas, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lbl_Cursos, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lbl_viviendas)
+                .addComponent(lbl_Cursos)
                 .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -211,41 +199,27 @@ public class Dlg_MostrarCursos extends javax.swing.JDialog {
         // TODO add your handling code here:
         txt_buscar.requestFocus();
         int posicion = cmb_Eleccion.getSelectedIndex();
-        List<Vivienda> listado = new ArrayList<>();
-        if (posicion == 0) {
-            try {
-                CasasDAO cDAO = new CasasDAO();
-               List<Casa> c=new ArrayList<>() ;
-                c.add(cDAO.getCasa((Integer.parseInt(txt_buscar.getText()))));
-                 listado.addAll(c);
-                ((Viviendas_TableModel) tbl_viviendas.getModel()).setListaViviendas(listado);
-                txt_buscar.requestFocus();
+        List<Curso> listado = new ArrayList<>();
 
-            } catch (SQLException ex) {
-                Logger.getLogger(Dlg_MostrarCursos.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(Dlg_MostrarCursos.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (Exception ex) {
-                Logger.getLogger(Dlg_MostrarCursos.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            CursoDAO cDAO = new CursoDAO();
+            List<Curso> c = new ArrayList<>();
+            if (posicion == 0) {
+                c.add(cDAO.getNumeroCurso((Integer.parseInt(txt_buscar.getText()))));
+            } else if (posicion == 1) {
+                c = cDAO.getCursoNombre(txt_buscar.getText());
             }
 
-        }
-        if (posicion == 1) {
-            try {
-                PisosDAO pDAO = new PisosDAO();
-                List<Piso> p= new ArrayList<>();
-                p.add( pDAO.getPiso((Integer.parseInt(txt_buscar.getText()))));
-                     listado.addAll(p);
-                ((Viviendas_TableModel) tbl_viviendas.getModel()).setListaViviendas(listado);
-                txt_buscar.requestFocus();
-            } catch (SQLException ex) {
-                Logger.getLogger(Dlg_MostrarCursos.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(Dlg_MostrarCursos.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (Exception ex) {
-                Logger.getLogger(Dlg_MostrarCursos.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            listado.addAll(c);
+            ((TM_Cursos) tbl_cursos.getModel()).setListaCurso(listado);
+            txt_buscar.requestFocus();
 
+        } catch (SQLException ex) {
+            Logger.getLogger(Dlg_MostrarCursos.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Dlg_MostrarCursos.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(Dlg_MostrarCursos.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         if (listado == null) {
@@ -260,15 +234,6 @@ public class Dlg_MostrarCursos extends javax.swing.JDialog {
         txt_buscar.requestFocus();
     }//GEN-LAST:event_txt_buscarActionPerformed
 
-    private void txt_buscarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_buscarKeyTyped
-        // TODO add your handling code here:
-
-        if (evt.getKeyChar() < '0' || evt.getKeyChar() > '9') {
-            evt.consume();
-        }
-
-    }//GEN-LAST:event_txt_buscarKeyTyped
-
     private void cmb_EleccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmb_EleccionActionPerformed
 
         txt_buscar.requestFocus();
@@ -277,16 +242,16 @@ public class Dlg_MostrarCursos extends javax.swing.JDialog {
 
     private void btn_eliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_eliminarActionPerformed
 
-        int fila = tbl_viviendas.getSelectedRow();
+        int fila = tbl_cursos.getSelectedRow();
         if (fila != -1) {
-            Vivienda vivienda = ((Viviendas_TableModel) tbl_viviendas.getModel()).getVivienda(fila);
-            if (vivienda instanceof Piso) {
+            Curso c = ((TM_Cursos) tbl_cursos.getModel()).getCurso(fila);
+            if (c instanceof Curso) {
 
                 try {
-                    PisosDAO pDAO = new PisosDAO();
+                    CursoDAO cDAO = new CursoDAO();
 
-                    if (pDAO.eliminarPiso(((Piso) vivienda).getCodigoPiso())) {
-                        ((Viviendas_TableModel) tbl_viviendas.getModel()).eliminarVivienda(fila);
+                    if (cDAO.eliminarCurso(((Curso) c).getIdCurso())) {
+                        ((TM_Cursos) tbl_cursos.getModel()).eliminarCurso(fila);
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(Dlg_MostrarCursos.class.getName()).log(Level.SEVERE, null, ex);
@@ -295,11 +260,11 @@ public class Dlg_MostrarCursos extends javax.swing.JDialog {
                 }
             }
 
-            if (vivienda instanceof Casa) {
+            if (c instanceof Curso) {
                 try {
-                    CasasDAO cDAO = new CasasDAO();
-                    if (cDAO.eliminarCasa(((Casa) vivienda).getCodigoCasa())) {
-                        ((Viviendas_TableModel) tbl_viviendas.getModel()).eliminarVivienda(fila);
+                    CursoDAO cDAO = new CursoDAO();
+                    if (cDAO.eliminarCurso(((Curso) c).getIdCurso())) {
+                        ((TM_Cursos) tbl_cursos.getModel()).eliminarCurso(fila);
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(Dlg_MostrarCursos.class.getName()).log(Level.SEVERE, null, ex);
@@ -312,9 +277,8 @@ public class Dlg_MostrarCursos extends javax.swing.JDialog {
     }//GEN-LAST:event_btn_eliminarActionPerformed
 
     private void btn_nuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_nuevoActionPerformed
-        Dlg_NuevoCurso dlgAlta = new Dlg_NuevoCurso((JFrame) this.getParent(), true);
+        Dlg_AltaCurso dlgAlta = new Dlg_AltaCurso((JFrame) this.getParent(), true);
         dlgAlta.setVisible(true);
-        dlgAlta.dispose();
         cargarTabla();
     }//GEN-LAST:event_btn_nuevoActionPerformed
 
@@ -372,31 +336,23 @@ public class Dlg_MostrarCursos extends javax.swing.JDialog {
     private javax.swing.JComboBox<String> cmb_Eleccion;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JLabel lbl_viviendas;
-    private javax.swing.JTable tbl_viviendas;
+    private javax.swing.JLabel lbl_Cursos;
+    private javax.swing.JTable tbl_cursos;
     private javax.swing.JTextField txt_buscar;
     // End of variables declaration//GEN-END:variables
 
     private void cargarTabla() {
         try {
-            CasasDAO cDAO = new CasasDAO();
-            PisosDAO pDAO = new PisosDAO();
-            List<Vivienda> listaViviendas = new ArrayList<Vivienda>();
-            List<Casa> listaCasas;
-            List<Piso> listaPisos;
-            listaCasas = cDAO.getCasas();
-            listaPisos = pDAO.getPisos();
-            listaViviendas.addAll(listaCasas);
-            listaViviendas.addAll(listaPisos);
-
-            Viviendas_TableModel modelo = new Viviendas_TableModel(listaViviendas);
-            tbl_viviendas.setModel(modelo);
+            CursoDAO cDAO = new CursoDAO();
+            List<Curso> lista = cDAO.getCursos();
+            TM_Cursos modelo = new TM_Cursos(lista);
+            tbl_cursos.setModel(modelo);
         } catch (SQLException ex) {
-            Logger.getLogger(Dlg_MostrarCursos.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Dlg_MostrarAlumnos.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Dlg_MostrarCursos.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Dlg_MostrarAlumnos.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            Logger.getLogger(Dlg_MostrarCursos.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Dlg_MostrarAlumnos.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

@@ -5,8 +5,8 @@
  */
 package gui;
 
-
 import dao.AlumnoDAO;
+import dao.CursoDAO;
 import exception.DireccionFormatException;
 import exception.DniFormatException;
 import exception.NombreFormatException;
@@ -14,10 +14,16 @@ import exception.TlfFormatException;
 import java.awt.Component;
 import java.awt.Container;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
+import javax.swing.JList;
 import javax.swing.JTextField;
 import modelo.Alumno;
+import modelo.Curso;
 
 /**
  *
@@ -34,6 +40,25 @@ public class Dlg_AltaAlumno extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.setLocationRelativeTo(null);//para que la aplicacion este en el medio de la pantalla
+        try {
+            CursoDAO cDAO = new CursoDAO();
+            List<Curso> lista = cDAO.getCursos();
+
+            cb_Curso.setModel(new DefaultComboBoxModel(lista.toArray()));
+            cb_Curso.setRenderer(new DefaultListCellRenderer() {
+                @Override
+                public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    if (value instanceof Curso) {
+                        Curso curso = (Curso) value;
+                        setText(curso.getNombre());
+                    }
+                    return this;
+                }
+            });
+        } catch (Exception ex) {
+
+        }
     }
 
     /**
@@ -55,7 +80,7 @@ public class Dlg_AltaAlumno extends javax.swing.JDialog {
         lbl_telefono = new javax.swing.JLabel();
         txt_Dni = new javax.swing.JTextField();
         lbl_Dni = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox();
+        cb_Curso = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Alta Nuevo Socio");
@@ -108,7 +133,7 @@ public class Dlg_AltaAlumno extends javax.swing.JDialog {
         lbl_Dni.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
         lbl_Dni.setText("DNI:");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cb_Curso.setToolTipText("");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -137,7 +162,7 @@ public class Dlg_AltaAlumno extends javax.swing.JDialog {
                         .addComponent(lbl_Dni)
                         .addGap(23, 23, 23)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cb_Curso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txt_Dni, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(20, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -167,7 +192,7 @@ public class Dlg_AltaAlumno extends javax.swing.JDialog {
                     .addComponent(txt_Dni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lbl_Dni))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cb_Curso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_Aceptar)
@@ -186,8 +211,11 @@ public class Dlg_AltaAlumno extends javax.swing.JDialog {
         try {
             AlumnoDAO aDAO = new AlumnoDAO();
             alumno = new Alumno(txt_Nombre.getText().toLowerCase(), txt_Telefono.getText().toLowerCase());
-            this.alumno.setDireccion(txt_Direccion.getText().toLowerCase());
-            this.alumno.setDni(txt_Dni.getText().toLowerCase());
+            alumno.setDireccion(txt_Direccion.getText().toLowerCase());
+            alumno.setDni(txt_Dni.getText().toLowerCase());
+            Curso item = (Curso) cb_Curso.getSelectedItem();
+            alumno.setIdCurso(item.getIdCurso());
+
             aDAO.insertarAlumno(alumno);
             limpiar(this);
 
@@ -197,11 +225,11 @@ public class Dlg_AltaAlumno extends javax.swing.JDialog {
     }//GEN-LAST:event_btn_AceptarActionPerformed
 
     private void txt_TelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_TelefonoActionPerformed
-    
+
     }//GEN-LAST:event_txt_TelefonoActionPerformed
 
     private void txt_TelefonoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_TelefonoKeyTyped
-      char tecleado = evt.getKeyChar();
+        char tecleado = evt.getKeyChar();
         if (tecleado < '0' || tecleado > '9') {
             evt.consume();
         }
@@ -253,7 +281,7 @@ public class Dlg_AltaAlumno extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_Aceptar;
     private javax.swing.JButton btn_Cancelar;
-    private javax.swing.JComboBox jComboBox1;
+    private javax.swing.JComboBox cb_Curso;
     private javax.swing.JLabel lbl_Direccion;
     private javax.swing.JLabel lbl_Dni;
     private javax.swing.JLabel lbl_Nombre;

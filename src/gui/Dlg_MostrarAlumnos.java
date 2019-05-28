@@ -5,7 +5,6 @@
  */
 package gui;
 
-
 import dao.AlumnoDAO;
 import exception.DireccionFormatException;
 import exception.DniFormatException;
@@ -35,8 +34,8 @@ public class Dlg_MostrarAlumnos extends javax.swing.JDialog {
     public Dlg_MostrarAlumnos(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-         this.setLocationRelativeTo(null);//para poner la pantalla centrada
-          cargarTabla();
+        this.setLocationRelativeTo(null);//para poner la pantalla centrada
+        cargarTabla();
         //deja eliminar si tienes seleccionada una fila de la tabla
         tbl_alumnos.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -88,7 +87,7 @@ public class Dlg_MostrarAlumnos extends javax.swing.JDialog {
         });
 
         cmb_Eleccion.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
-        cmb_Eleccion.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Codigo", "Nombre" }));
+        cmb_Eleccion.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Numero", "Nombre", "IdCurso" }));
         cmb_Eleccion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmb_EleccionActionPerformed(evt);
@@ -214,14 +213,14 @@ public class Dlg_MostrarAlumnos extends javax.swing.JDialog {
             if (evt.getKeyChar() < '0' || evt.getKeyChar() > '9') {
                 evt.consume();
             }
-            
+
         }
-        if (this.cmb_Eleccion.getSelectedIndex() == 1){
-        //que busque por primera letra
-        String nombre;
-        nombre=txt_buscar.getText().toLowerCase();
-        nombre+=Character.toLowerCase(evt.getKeyChar());
-        cargarTablaSelectiva(nombre);
+        if (this.cmb_Eleccion.getSelectedIndex() == 1) {
+            //que busque por primera letra
+            String nombre;
+            nombre = txt_buscar.getText().toLowerCase();
+            nombre += Character.toLowerCase(evt.getKeyChar());
+            cargarTablaSelectiva(nombre);
         }
     }//GEN-LAST:event_txt_buscarKeyTyped
 
@@ -240,7 +239,7 @@ public class Dlg_MostrarAlumnos extends javax.swing.JDialog {
             int fila = tbl_alumnos.getSelectedRow();
             Alumno alumno = ((TM_Alumno) tbl_alumnos.getModel()).getAlumno(fila);//retorna un Alumno
 
-           AlumnoDAO ldao = new AlumnoDAO();
+            AlumnoDAO ldao = new AlumnoDAO();
             if (ldao.eliminarAlumno(alumno)) {
                 ((TM_Alumno) tbl_alumnos.getModel()).eliminarAlumno(fila);
                 btn_EliminarAlumno.setEnabled(false);
@@ -253,33 +252,45 @@ public class Dlg_MostrarAlumnos extends javax.swing.JDialog {
     private void btn_BuscarAlumnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BuscarAlumnoActionPerformed
         try {
             txt_buscar.requestFocus();
-            AlumnoDAO sDAO = new AlumnoDAO();
+            AlumnoDAO aDAO = new AlumnoDAO();
             int posicion = cmb_Eleccion.getSelectedIndex();
-            List<Alumno> listado = null;
+            List<Alumno> listado = new ArrayList<>();
             if (posicion == 0) {//numero de alumno
-                listado = sDAO.getNumeroAlumno(Integer.parseInt(txt_buscar.getText()));
+                try {
+                    listado.add(aDAO.getNumeroAlumno(Integer.parseInt(txt_buscar.getText())));
+                } catch (Exception ex) {
+                    //cuando está vacio peta el resto de la ejecucion
+                }
             }
             if (posicion == 1) {//nombre
-                listado = sDAO.getAlumnoNombre(txt_buscar.getText());
+                listado = aDAO.getAlumnoNombre(txt_buscar.getText());
             }
             if (posicion == 2) {//idCurso
-                listado = sDAO.getNCurso(txt_buscar.getText());
+                try {
+                    listado = aDAO.getNCurso(Integer.parseInt(txt_buscar.getText()));
+                } catch (Exception ex) {
+                    //cuando está vacio peta el resto de la ejecucion
+                }
             }
-            if (txt_buscar.getText() == null || txt_buscar.getText().trim().isEmpty()) {
-                listado = sDAO.getAlumnos();
+            if (txt_buscar.getText() == null || txt_buscar.getText().isEmpty()) {
+                listado = aDAO.getAlumnos();
             }
-            ((TM_Alumno)tbl_alumnos.getModel()).setListaAlumnos(listado);
+            ((TM_Alumno) tbl_alumnos.getModel()).setListaAlumnos(listado);
 
             txt_buscar.requestFocus();
 
         } catch (ClassNotFoundException | DireccionFormatException | NombreFormatException | TlfFormatException | DniFormatException ex) {
             Logger.getLogger(pantallaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(Dlg_MostrarAlumnos.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(Dlg_MostrarAlumnos.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }//GEN-LAST:event_btn_BuscarAlumnoActionPerformed
 
     private void btn_NuevoAlumnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_NuevoAlumnoActionPerformed
-        Dlg_NuevoAlumno dlgAlta = new Dlg_NuevoAlumno(this, true);
+        Dlg_AltaAlumno dlgAlta = new Dlg_AltaAlumno((JFrame) this.getParent(), true);
         dlgAlta.setVisible(true);
         cargarTabla();
     }//GEN-LAST:event_btn_NuevoAlumnoActionPerformed
@@ -344,7 +355,7 @@ public class Dlg_MostrarAlumnos extends javax.swing.JDialog {
 
     private void cargarTabla() {
         try {
-           AlumnoDAO aDAO = new AlumnoDAO();
+            AlumnoDAO aDAO = new AlumnoDAO();
             List<Alumno> lista = aDAO.getAlumnos();
             TM_Alumno modelo = new TM_Alumno(lista);
             tbl_alumnos.setModel(modelo);
@@ -355,20 +366,20 @@ public class Dlg_MostrarAlumnos extends javax.swing.JDialog {
         } catch (Exception ex) {
             Logger.getLogger(Dlg_MostrarAlumnos.class.getName()).log(Level.SEVERE, null, ex);
         }
-}
+    }
 
     private void cargarTablaSelectiva(String nombre) {
         try {
             AlumnoDAO aDAO;
-            
+
             aDAO = new AlumnoDAO();
             List<Alumno> lista;
             lista = aDAO.getAlumnoNombre(nombre);
-            
-//vincula el modelo con el modelo de tabla(ej PersonasTableModel).
-TM_Alumno modelo = new TM_Alumno(lista);
 
-tbl_alumnos.setModel(modelo);
+//vincula el modelo con el modelo de tabla(ej PersonasTableModel).
+            TM_Alumno modelo = new TM_Alumno(lista);
+
+            tbl_alumnos.setModel(modelo);
         } catch (SQLException ex) {
             Logger.getLogger(Dlg_MostrarAlumnos.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
@@ -376,7 +387,6 @@ tbl_alumnos.setModel(modelo);
         } catch (Exception ex) {
             Logger.getLogger(Dlg_MostrarAlumnos.class.getName()).log(Level.SEVERE, null, ex);
         }
-       
-        
+
     }
 }

@@ -3,20 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ex.gestorsocio_gui;
+package gui;
 
-import DAO.SocioDAO;
-import EXCEPCIONES.DireccionFormatException;
-import EXCEPCIONES.DniFormatException;
-import EXCEPCIONES.NombreFormatException;
-import EXCEPCIONES.TlfFormatException;
-import MODELO.Socio;
+import dao.CursoDAO;
+import exception.DireccionFormatException;
+import exception.DniFormatException;
+import exception.NombreFormatException;
+import exception.TlfFormatException;
 import java.awt.Component;
 import java.awt.Container;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTextField;
+import modelo.Curso;
 
 /**
  *
@@ -24,7 +24,7 @@ import javax.swing.JTextField;
  */
 public class Dlg_AltaCurso extends javax.swing.JDialog {
 
-    private Socio socio;
+    private Curso curso;
 
     /**
      * Creates new form Dlg_AltaSocio
@@ -48,12 +48,6 @@ public class Dlg_AltaCurso extends javax.swing.JDialog {
         btn_Aceptar = new javax.swing.JButton();
         lbl_Nombre = new javax.swing.JLabel();
         txt_Nombre = new javax.swing.JTextField();
-        txt_Direccion = new javax.swing.JTextField();
-        lbl_Direccion = new javax.swing.JLabel();
-        txt_Telefono = new javax.swing.JTextField();
-        lbl_telefono = new javax.swing.JLabel();
-        txt_Dni = new javax.swing.JTextField();
-        lbl_Dni = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Alta Nuevo Socio");
@@ -81,59 +75,19 @@ public class Dlg_AltaCurso extends javax.swing.JDialog {
 
         txt_Nombre.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
 
-        txt_Direccion.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-
-        lbl_Direccion.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
-        lbl_Direccion.setText("Dirección:");
-
-        txt_Telefono.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-        txt_Telefono.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_TelefonoActionPerformed(evt);
-            }
-        });
-        txt_Telefono.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txt_TelefonoKeyTyped(evt);
-            }
-        });
-
-        lbl_telefono.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
-        lbl_telefono.setText("Teléfono:");
-
-        txt_Dni.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
-
-        lbl_Dni.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
-        lbl_Dni.setText("DNI:");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lbl_Dni)
+                        .addGap(20, 20, 20)
+                        .addComponent(lbl_Nombre)
                         .addGap(23, 23, 23)
-                        .addComponent(txt_Dni, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txt_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lbl_telefono)
-                        .addGap(18, 18, 18)
-                        .addComponent(txt_Telefono, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(lbl_Nombre)
-                                .addGap(23, 23, 23))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(lbl_Direccion)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txt_Direccion, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txt_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
+                        .addGap(111, 111, 111)
                         .addComponent(btn_Aceptar)
                         .addGap(18, 18, 18)
                         .addComponent(btn_Cancelar)))
@@ -146,23 +100,11 @@ public class Dlg_AltaCurso extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lbl_Nombre)
                     .addComponent(txt_Nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txt_Telefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lbl_telefono))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txt_Direccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lbl_Direccion))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txt_Dni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lbl_Dni))
-                .addGap(3, 3, 3)
+                .addGap(35, 35, 35)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_Cancelar)
                     .addComponent(btn_Aceptar))
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -174,28 +116,15 @@ public class Dlg_AltaCurso extends javax.swing.JDialog {
 
     private void btn_AceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AceptarActionPerformed
         try {
-            SocioDAO sDAO = new SocioDAO();
-            socio = new Socio(txt_Nombre.getText().toLowerCase(), txt_Telefono.getText().toLowerCase());
-            this.socio.setDireccion(txt_Direccion.getText().toLowerCase());
-            this.socio.setDni(txt_Dni.getText().toLowerCase());
-            sDAO.insertarSocio(socio);
+            CursoDAO cDAO = new CursoDAO();
+            curso = new Curso(txt_Nombre.getText().toLowerCase());
+            cDAO.insertarCurso(curso);
             limpiar(this);
 
-        } catch (SQLException | ClassNotFoundException | NombreFormatException | TlfFormatException | DireccionFormatException | DniFormatException ex) {
+        } catch (SQLException | ClassNotFoundException | NombreFormatException ex) {
             Logger.getLogger(Dlg_AltaCurso.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btn_AceptarActionPerformed
-
-    private void txt_TelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_TelefonoActionPerformed
-    
-    }//GEN-LAST:event_txt_TelefonoActionPerformed
-
-    private void txt_TelefonoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_TelefonoKeyTyped
-      char tecleado = evt.getKeyChar();
-        if (tecleado < '0' || tecleado > '9') {
-            evt.consume();
-        }
-    }//GEN-LAST:event_txt_TelefonoKeyTyped
 
     /**
      * @param args the command line arguments
@@ -243,14 +172,8 @@ public class Dlg_AltaCurso extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_Aceptar;
     private javax.swing.JButton btn_Cancelar;
-    private javax.swing.JLabel lbl_Direccion;
-    private javax.swing.JLabel lbl_Dni;
     private javax.swing.JLabel lbl_Nombre;
-    private javax.swing.JLabel lbl_telefono;
-    private javax.swing.JTextField txt_Direccion;
-    private javax.swing.JTextField txt_Dni;
     private javax.swing.JTextField txt_Nombre;
-    private javax.swing.JTextField txt_Telefono;
     // End of variables declaration//GEN-END:variables
 
     private void limpiar(Container contenedor) {
