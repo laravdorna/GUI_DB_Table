@@ -50,7 +50,7 @@ public class Curso {
     //METODOS DE CONTROL DE LOS ATRIBUTOS
     private boolean comprobarNombre(String nombre) {
         nombre = nombre.trim();
-        if (nombre.isEmpty() || nombre.indexOf(" ") == -1) {
+        if (nombre.isEmpty() || nombre.contains(" ")) {
             return false;
         }
 

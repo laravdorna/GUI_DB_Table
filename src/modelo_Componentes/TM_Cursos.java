@@ -54,16 +54,16 @@ public class TM_Cursos extends AbstractTableModel {
 
     }
 
-    public void addAlumno(Curso c) {
+    public void addCurso(Curso c) {
         listaCursos.add(getRowCount(), c);
         fireTableRowsInserted(getRowCount(), getRowCount());
     }
 
-    public Curso getAlumno(int fila) {
+    public Curso getCurso(int fila) {
         return listaCursos.get(fila);
     }
 
-    public void setListaAlumnos(List<Curso> listaCurso) {
+    public void setListaCurso(List<Curso> listaCurso) {
         this.listaCursos = listaCurso;
         fireTableDataChanged();
     }

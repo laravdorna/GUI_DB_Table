@@ -6,6 +6,7 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -25,7 +26,7 @@ public class AccesoDB {
 
     //constructor donde se inicializan la url y el acceso a la base de datos y realiza la conexion cuando lo instancies
     public AccesoDB() throws SQLException, ClassNotFoundException {
-        url = "jdbc:sqlite:chinook.db";
+        url = "jdbc:sqlite:registro.db";
       
         realizarConexion();
     }
@@ -37,7 +38,17 @@ public class AccesoDB {
      */
     private void realizarConexion() throws SQLException, ClassNotFoundException {
         registarDriver();
-        conn = DriverManager.getConnection(url, user, password);
+        try{
+            conn = DriverManager.getConnection(url);
+            if (conn != null) {
+                DatabaseMetaData meta = conn.getMetaData();
+                System.out.println("The driver name is " + meta.getDriverName());
+                System.out.println("A new database has been created.");
+            }
+ 
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void registarDriver() throws ClassNotFoundException {
@@ -67,34 +78,29 @@ public class AccesoDB {
      * conexión saltará una excepción con el mensaje de error.
      *
      */
-    public static void crearTablas() {
-        String url = "jdbc:sqlite:chinook.db";
-        
-        String sql = "DROP TABLE IF EXISTS paises";
-        
-        String sql2 = "CREATE TABLE cursos (\n"
-                + " id_curso integer PRIMARY KEY, \n"
-                + " nombre text \n"
+    public void crearTablas() {       
+        String sql1 = "CREATE TABLE IF NOT EXISTS cursos ("
+                + " idCurso INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + " nombre text"
                 + ");";
 
-        String sql3 = "DROP TABLE IF EXISTS alumnos";
+   
 
-        String sql4 = "CREATE TABLE alumnos (\n"
-                + " nAlumno integer PRIMARY KEY, \n"
-                + " nombre text, \n"
-                + " direccion text, \n"
-                + " direccion telefono, \n"
-                + " id_curso integer NOT NULL, \n"
-                + " FOREIGN KEY (id_curso) \n"
-                + " REFERENCES cursos(id_curso) \n"
+        String sql2 = "CREATE TABLE IF NOT EXISTS alumnos ("
+                + " nAlumno INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + " nombre text,"
+                + " direccion text,"
+                + " dni text," 
+                + " telefono text,"
+                + " idCurso INTEGER NOT NULL,"
+                + " FOREIGN KEY (idCurso)"
+                + " REFERENCES cursos(idCurso)"
                 + ");";
 
-        try (Connection conn = DriverManager.getConnection(url);
-                Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute(sql1);
             stmt.execute(sql2);
-            stmt.execute(sql3);
-            stmt.execute(sql4);
+      
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
